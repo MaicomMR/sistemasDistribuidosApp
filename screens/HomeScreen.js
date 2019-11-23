@@ -16,6 +16,7 @@ class HomeScreen extends Component {
       headerTitleStyle: { textAlign: "center", flex: 1 }
     };
   };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -42,19 +43,26 @@ class HomeScreen extends Component {
         width: "100%",
         backgroundColor: "rgba(0,0,0,0.5)",
       }}
+
+
+
       />
     );
   }
+
   renderItem = (data) =>
+
+
+  // MONTAGEM DO ÍTEM AVIÃO DA LISTAGEM
     <View>
       <TouchableOpacity style={styles.list}>
-        <Text style={styles.lightText}>{data.item.name}</Text>
-        {/* <Text style={styles.lightText}>{data.item.photo}</Text> */}
-        <Text style={styles.lightText} thousandSeparator={true}>{data.item.value} R$</Text>
+        <Text style={styles.lightText}>Modelo da Aeronave: {data.item.name}</Text>
+        <Text style={styles.lightText} thousandSeparator={true}>Valor da Aeronave: {data.item.value} R$</Text>
         <View style={styles.preview}>
-          <Image
-            style={{ width: 50, height: 50 }}
-            source={{ uri: 'https://facebook.github.io/react-native/img/tiny_logo.png' }}
+        <Image
+            style={{ width: 150, height: 150 }}
+            source={{ uri: 'http://revendaaeronaves.herokuapp.com/images/covers/' + data.item.photo  }}
+            resizeMode="contain"
           />
         </View>
       </TouchableOpacity>
@@ -71,8 +79,13 @@ class HomeScreen extends Component {
         </View>
       )
     }
+
+
     return (
-      <View style={styles.container}>
+
+      // EXIBIÇÃO DA VIEW DA HOME
+      < View style={styles.container} >
+
         <FlatList
           data={this.state.dataSource}
           ItemSeparatorComponent={this.FlatListItemSeparator}
@@ -80,6 +93,7 @@ class HomeScreen extends Component {
           keyExtractor={item => item.id.toString()}
         />
 
+      
         <Button
           title="ADICIONAR AERONAVE"
           onPress={() => this.props.navigation.navigate('AddAirplane')}
@@ -130,97 +144,100 @@ class AddAirplane extends Component {
     });
     console.log('Success:', JSON.stringify(collection));
 
-}
+    this.props.navigation.navigate('AddAirplane')
+    
 
-
-
-
-// CONSTRUTOR COM AS VARIÁVEIS
-
-constructor() {
-  super();
-  this.state = {
-    model: '',
-    name: '',
-    value: '',
-    year: '',
-    hours: ''
-  }
-}
-
-
-
-
-// EDITOR DAS VARIÁVEIS DE ACORDO COM A DIGITAÇÃO NOS CAMPOS
-
-changeText(text, field) {
-  if (field == 'model') {
-    this.setState({ model: text, })
-    // console.warn(text)
-  } else if (field == 'name') {
-    this.setState({ name: text, })
-    // console.warn(text)
-  } else if (field == 'value') {
-    this.setState({ value: text, })
-    // console.warn(text)
-  } else if (field == 'year') {
-    this.setState({ year: text, })
-    // console.warn(text)
-  } else if (field == 'hours') {
-    this.setState({ hours: text, })
-    // console.warn(text)
   }
 
-}
+
+
+
+  // CONSTRUTOR COM AS VARIÁVEIS
+
+  constructor() {
+    super();
+    this.state = {
+      model: '',
+      name: '',
+      value: '',
+      year: '',
+      hours: ''
+    }
+  }
 
 
 
 
-// JANELA RESPONSÁVEL PELO FORM DE ADICIONAR AERONAVES
+  // EDITOR DAS VARIÁVEIS DE ACORDO COM A DIGITAÇÃO NOS CAMPOS
 
-render() {
-  return (
-    <View>
-      <Text style={styles.formHeader}>ADICIONAR AERONAVE</Text>
-      <Text style={styles.formTextHeader}>Preencha os campos a baixo para anunciar sua aeronave à venda</Text>
+  changeText(text, field) {
+    if (field == 'model') {
+      this.setState({ model: text, })
+      // console.warn(text)
+    } else if (field == 'name') {
+      this.setState({ name: text, })
+      // console.warn(text)
+    } else if (field == 'value') {
+      this.setState({ value: text, })
+      // console.warn(text)
+    } else if (field == 'year') {
+      this.setState({ year: text, })
+      // console.warn(text)
+    } else if (field == 'hours') {
+      this.setState({ hours: text, })
+      // console.warn(text)
+    }
+
+  }
 
 
-      <TextInput
-        // placeholder="Modelo da Aeronave"
-        placeholder="Modelo"
-        style={styles.textInput}
-        onChangeText={(text) => this.changeText(text, 'model')}
-      />
-      <TextInput
-        placeholder="Nome"
-        style={styles.textInput}
-        onChangeText={(text) => this.changeText(text, 'name')}
-      />
-      <TextInput
-        placeholder="Valor(R$):"
-        style={styles.textInput}
-        onChangeText={(text) => this.changeText(text, 'value')}
-      />
-      <TextInput
-        placeholder="Ano"
-        style={styles.textInput}
-        onChangeText={(text) => this.changeText(text, 'year')}
-      />
-      <TextInput
-        placeholder="Horas de voo"
-        style={styles.textInput}
-        onChangeText={(text) => this.changeText(text, 'hours')}
-      />
 
-      <TouchableHighlight style={styles.button}
-        onPress={() => this.pressionarBotao()}
-      >
-        <Text style={styles.textButton}>PUBLICAR</Text>
-      </TouchableHighlight>
 
-    </View>
-  )
-}
+  // JANELA RESPONSÁVEL PELO FORM DE ADICIONAR AERONAVES
+
+  render() {
+    return (
+      <View>
+        <Text style={styles.formHeader}>ADICIONAR AERONAVE</Text>
+        <Text style={styles.formTextHeader}>Preencha os campos a baixo para anunciar sua aeronave à venda</Text>
+
+
+        <TextInput
+          // placeholder="Modelo da Aeronave"
+          placeholder="Modelo"
+          style={styles.textInput}
+          onChangeText={(text) => this.changeText(text, 'model')}
+        />
+        <TextInput
+          placeholder="Nome"
+          style={styles.textInput}
+          onChangeText={(text) => this.changeText(text, 'name')}
+        />
+        <TextInput
+          placeholder="Valor(R$):"
+          style={styles.textInput}
+          onChangeText={(text) => this.changeText(text, 'value')}
+        />
+        <TextInput
+          placeholder="Ano"
+          style={styles.textInput}
+          onChangeText={(text) => this.changeText(text, 'year')}
+        />
+        <TextInput
+          placeholder="Horas de voo"
+          style={styles.textInput}
+          onChangeText={(text) => this.changeText(text, 'hours')}
+        />
+
+        <TouchableHighlight style={styles.button}
+          onPress={() => this.pressionarBotao()}
+        >
+          <Text style={styles.textButton}>PUBLICAR</Text>
+        </TouchableHighlight>
+
+      </View>
+    )
+  }
 }
 
 const AppNavigator = createStackNavigator(
@@ -254,18 +271,18 @@ export default class App extends Component {
 }
 
 const styles = StyleSheet.create({
-  airplaneListName:{
+  airplaneListName: {
     textAlign: "center",
     padding: 3,
     fontSize: 14
   },
-  formHeader:{
+  formHeader: {
     textAlign: "center",
     backgroundColor: '#b6d9e0',
     padding: 12,
     fontSize: 16
   },
-  formTextHeader:{
+  formTextHeader: {
     textAlign: "center",
     padding: 20,
   },
