@@ -93,7 +93,8 @@ class HomeScreen extends Component {
 
 class AddAirplane extends Component {
 
-
+  // Método disparado ao acionar o botão "ADICIONAR AERONAVE"
+  // Vai criar um objeto a partir das entradas do formulário
   pressionarBotao() {
     let collection = {}
     collection.model = this.state.model,
@@ -110,14 +111,16 @@ class AddAirplane extends Component {
       collection.manufacture_id = 1
 
 
-
+    // "console log" para verificar se ta tudo ok
+    // Somente para uso dos devs
     console.warn(collection)
 
 
-
+    // URL da API definida em uma variável para caso tenha de ser alterada
     const url = 'https://revendaaeronaves.herokuapp.com/api/apiCreate';
     const data = { username: 'example' };
 
+    // Disparo do método POST com o objeto montado em forma de arquivo JSON
     fetch(url, {
       method: 'POST', // or 'PUT'
       body: JSON.stringify(collection), // data can be `string` or {object}!
@@ -236,6 +239,13 @@ const AppNavigator = createStackNavigator(
 );
 
 const AppContainer = createAppContainer(AppNavigator);
+
+
+
+// ------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------       PARTE RESPONSÁVEL PELA ESTILIZAÇÃO DO APP      --------------------------------
+// ------------------------------------------------------------------------------------------------------------------------
+
 
 export default class App extends Component {
   render() {
