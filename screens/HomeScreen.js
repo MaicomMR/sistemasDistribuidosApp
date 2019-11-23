@@ -1,198 +1,308 @@
-import * as WebBrowser from 'expo-web-browser';
-import React from 'react';
-import {
-  Image,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, { Component } from 'react';
+import { TouchableOpacity, FlatList, ActivityIndicator, StyleSheet, View, Text, Button, Image, Alert } from 'react-native';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
+import { TextInput, TouchableHighlight } from 'react-native-gesture-handler';
 
-import { MonoText } from '../components/StyledText';
 
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}>
-        <View style={styles.welcomeContainer}>
+class HomeScreen extends Component {
+
+
+
+
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: "Aeronaves a venda",
+      headerStyle: { backgroundColor: "#fff" },
+      headerTitleStyle: { textAlign: "center", flex: 1 }
+    };
+  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: true,
+      dataSource: []
+    };
+  }
+  componentDidMount() {
+    fetch("http://revendaaeronaves.herokuapp.com/api")
+      .then(response => response.json())
+      .then((responseJson) => {
+        this.setState({
+          loading: false,
+          dataSource: responseJson
+        })
+      })
+      .catch(error => console.log(error)) //to catch the errors if any
+  }
+
+  FlatListItemSeparator = () => {
+    return (
+      <View style={{
+        height: .5,
+        width: "100%",
+        backgroundColor: "rgba(0,0,0,0.5)",
+      }}
+      />
+    );
+  }
+  renderItem = (data) =>
+    <View>
+      <TouchableOpacity style={styles.list}>
+        <Text style={styles.lightText}>{data.item.name}</Text>
+        {/* <Text style={styles.lightText}>{data.item.photo}</Text> */}
+        <Text style={styles.lightText} thousandSeparator={true}>{data.item.value} R$</Text>
+        <View style={styles.preview}>
           <Image
-            source={
-              __DEV__
-                ? require('../assets/images/robot-dev.png')
-                : require('../assets/images/robot-prod.png')
-            }
-            style={styles.welcomeImage}
+            style={{ width: 50, height: 50 }}
+            source={{ uri: 'https://facebook.github.io/react-native/img/tiny_logo.png' }}
           />
         </View>
-
-        <View style={styles.getStartedContainer}>
-          <DevelopmentModeNotice />
-
-          <Text style={styles.getStartedText}>Get started by opening</Text>
-
-          <View
-            style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-            <MonoText>screens/HomeScreen.js</MonoText>
-          </View>
-
-          <Text style={styles.getStartedText}>
-            Change this text and your app will automatically reload.
-          </Text>
-        </View>
-
-        <View style={styles.helpContainer}>
-          <TouchableOpacity onPress={handleHelpPress} style={styles.helpLink}>
-            <Text style={styles.helpLinkText}>
-              Help, it didn’t automatically reload!
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-
-      <View style={styles.tabBarInfoContainer}>
-        <Text style={styles.tabBarInfoText}>
-          This is a tab bar. You can edit it in:
-        </Text>
-
-        <View
-          style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          <MonoText style={styles.codeHighlightText}>
-            navigation/MainTabNavigator.js
-          </MonoText>
-        </View>
-      </View>
+      </TouchableOpacity>
     </View>
-  );
-}
 
-HomeScreen.navigationOptions = {
-  header: null,
-};
 
-function DevelopmentModeNotice() {
-  if (__DEV__) {
-    const learnMoreButton = (
-      <Text onPress={handleLearnMorePress} style={styles.helpLinkText}>
-        Learn more
-      </Text>
-    );
 
+
+  render() {
+    if (this.state.loading) {
+      return (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#0c9" />
+        </View>
+      )
+    }
     return (
-      <Text style={styles.developmentModeText}>
-        Development mode is enabled: your app will be slower but you can use
-        useful development tools. {learnMoreButton}
-      </Text>
-    );
-  } else {
-    return (
-      <Text style={styles.developmentModeText}>
-        You are not in development mode: your app will run at full speed.
-      </Text>
-    );
+      <View style={styles.container}>
+        <FlatList
+          data={this.state.dataSource}
+          ItemSeparatorComponent={this.FlatListItemSeparator}
+          renderItem={item => this.renderItem(item)}
+          keyExtractor={item => item.id.toString()}
+        />
+
+        <Button
+          title="ADICIONAR AERONAVE"
+          onPress={() => this.props.navigation.navigate('AddAirplane')}
+        />
+
+      </View>
+
+    )
   }
 }
 
-function handleLearnMorePress() {
-  WebBrowser.openBrowserAsync(
-    'https://docs.expo.io/versions/latest/workflow/development-mode/'
-  );
+class AddAirplane extends Component {
+
+
+  pressionarBotao() {
+    let collection = {}
+    collection.model = this.state.model,
+
+      collection.name = this.state.model,
+      collection.secondName = this.state.name,
+      collection.flightTime = this.state.hours,
+      collection.actualCity = "Added from app",
+      collection.value = this.state.value,
+      collection.year = this.state.year,
+      collection.observation = "Added from app",
+      collection.type = 1,
+      collection.description = "Added from app",
+      collection.manufacture_id = 1
+
+
+
+    console.warn(collection)
+
+
+
+    const url = 'https://revendaaeronaves.herokuapp.com/api/apiCreate';
+    const data = { username: 'example' };
+
+    fetch(url, {
+      method: 'POST', // or 'PUT'
+      body: JSON.stringify(collection), // data can be `string` or {object}!
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log('Success:', JSON.stringify(collection));
+
 }
 
-function handleHelpPress() {
-  WebBrowser.openBrowserAsync(
-    'https://docs.expo.io/versions/latest/workflow/up-and-running/#cant-see-your-changes'
-  );
+
+
+
+// CONSTRUTOR COM AS VARIÁVEIS
+
+constructor() {
+  super();
+  this.state = {
+    model: '',
+    name: '',
+    value: '',
+    year: '',
+    hours: ''
+  }
+}
+
+
+
+
+// EDITOR DAS VARIÁVEIS DE ACORDO COM A DIGITAÇÃO NOS CAMPOS
+
+changeText(text, field) {
+  if (field == 'model') {
+    this.setState({ model: text, })
+    // console.warn(text)
+  } else if (field == 'name') {
+    this.setState({ name: text, })
+    // console.warn(text)
+  } else if (field == 'value') {
+    this.setState({ value: text, })
+    // console.warn(text)
+  } else if (field == 'year') {
+    this.setState({ year: text, })
+    // console.warn(text)
+  } else if (field == 'hours') {
+    this.setState({ hours: text, })
+    // console.warn(text)
+  }
+
+}
+
+
+
+
+// JANELA RESPONSÁVEL PELO FORM DE ADICIONAR AERONAVES
+
+render() {
+  return (
+    <View>
+      <Text style={styles.formHeader}>ADICIONAR AERONAVE</Text>
+      <Text style={styles.formTextHeader}>Preencha os campos a baixo para anunciar sua aeronave à venda</Text>
+
+
+      <TextInput
+        // placeholder="Modelo da Aeronave"
+        placeholder="Modelo"
+        style={styles.textInput}
+        onChangeText={(text) => this.changeText(text, 'model')}
+      />
+      <TextInput
+        placeholder="Nome"
+        style={styles.textInput}
+        onChangeText={(text) => this.changeText(text, 'name')}
+      />
+      <TextInput
+        placeholder="Valor(R$):"
+        style={styles.textInput}
+        onChangeText={(text) => this.changeText(text, 'value')}
+      />
+      <TextInput
+        placeholder="Ano"
+        style={styles.textInput}
+        onChangeText={(text) => this.changeText(text, 'year')}
+      />
+      <TextInput
+        placeholder="Horas de voo"
+        style={styles.textInput}
+        onChangeText={(text) => this.changeText(text, 'hours')}
+      />
+
+      <TouchableHighlight style={styles.button}
+        onPress={() => this.pressionarBotao()}
+      >
+        <Text style={styles.textButton}>PUBLICAR</Text>
+      </TouchableHighlight>
+
+    </View>
+  )
+}
+}
+
+const AppNavigator = createStackNavigator(
+  {
+    Home: {
+      screen: HomeScreen
+    },
+    AddAirplane: {
+      screen: AddAirplane
+    }
+  },
+  {
+    initialRouteName: 'Home'
+  }
+
+);
+
+const AppContainer = createAppContainer(AppNavigator);
+
+export default class App extends Component {
+  render() {
+    return <AppContainer />;
+  }
 }
 
 const styles = StyleSheet.create({
+  airplaneListName:{
+    textAlign: "center",
+    padding: 3,
+    fontSize: 14
+  },
+  formHeader:{
+    textAlign: "center",
+    backgroundColor: '#b6d9e0',
+    padding: 12,
+    fontSize: 16
+  },
+  formTextHeader:{
+    textAlign: "center",
+    padding: 20,
+  },
+  preview: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+    borderWidth: 1,
+    flexDirection: 'column',
+  },
+  lightText: {
+    textAlign: "center",
+    margin: 2
+  },
+  button: {
+    backgroundColor: '#58a37f',
+    margin: 12,
+    padding: 12,
+    fontSize: 14
+  },
+  textButton: {
+    textAlign: "center",
+    color: "white"
+  },
+  textInput: {
+    height: 40,
+    paddingLeft: 6,
+    backgroundColor: '#f2f2f2',
+    borderColor: '#d6d6d6',
+    marginTop: 8,
+    marginLeft: 12,
+    marginRight: 12
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff"
   },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff"
   },
-  contentContainer: {
-    paddingTop: 30,
-  },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
-  },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
-  },
+  list: {
+    paddingVertical: 4,
+    margin: 5,
+    backgroundColor: "#fff"
+  }
 });
